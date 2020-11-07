@@ -31,6 +31,8 @@ public class DriverController {
     @PostMapping(value = URL_CREATE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody Driver driver) {
         try {
+            LOG.info(" ### Start of the DriverController register() ####");
+            LOG.info("Input --> "+driver.toString());
             List<String> errorMessages = driverOneService.validate(driver);
             if ( ! errorMessages.isEmpty()) {
                 return getBadRequestResponseEntity(errorMessages);
@@ -39,8 +41,9 @@ public class DriverController {
             if ( ! errorMessages.isEmpty()) {
                 return getBadRequestResponseEntity(errorMessages);
             }
-                Driver savedDriver = driverOneService.save(driver);
-                return new ResponseEntity<Driver>(savedDriver, HttpStatus.CREATED);
+            Driver savedDriver = driverOneService.save(driver);
+            LOG.info(" ### End of the DriverController register() ####");
+            return new ResponseEntity<Driver>(savedDriver, HttpStatus.CREATED);
 
         }catch (Exception ex) {
             LOG.error("Exception while registering the driver");

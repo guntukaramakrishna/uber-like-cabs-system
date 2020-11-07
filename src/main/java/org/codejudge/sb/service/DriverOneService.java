@@ -27,8 +27,8 @@ public class DriverOneService {
         if(driver.getEmail() == null || driver.getEmail().isEmpty()) {
             errorMessages.add("Email is Empty");
         }
-        if(driver.getEmail() != null && !driver.getEmail().contains("@")) {
-            errorMessages.add("Invalid email format");
+        if(driver.getPhone_number() == null) {
+            errorMessages.add("Phone number is empty");
         }
         if(driver.getPhone_number() != null && driver.getPhone_number().toString().length() != 10) {
             errorMessages.add("Invalid Phone Number");

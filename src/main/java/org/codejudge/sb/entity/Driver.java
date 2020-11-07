@@ -5,11 +5,13 @@ import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter @Setter @NoArgsConstructor
 @Entity
 @Table(name="cab_driver")
+@ToString
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
