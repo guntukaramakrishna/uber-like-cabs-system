@@ -47,7 +47,7 @@ public class LocationService {
 
         BiPredicate<Location, LocationRequest> distanceFiler = (x, y) -> {
             double distance = haversine.haversineDistance(x.getLatitude(),x.getLongitude(), y.getLatitude(), y.getLongitude());
-            LOG.info("Distance between two locations- "+distance);
+            LOG.info("Distance between two locations - "+x.toString()+ " &&fcv "+y.toString()+" is == "+distance);
             return distance <= 4.0;
         };
 

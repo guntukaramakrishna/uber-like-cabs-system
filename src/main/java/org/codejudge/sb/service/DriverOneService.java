@@ -27,6 +27,12 @@ public class DriverOneService {
         if(driver.getEmail() == null || driver.getEmail().isEmpty()) {
             errorMessages.add("Email is Empty");
         }
+        if(driver.getEmail() != null && !driver.getEmail().contains("@")) {
+            errorMessages.add("Invalid email format");
+        }
+        if(driver.getPhone_number() != null && driver.getPhone_number().toString().length() != 10) {
+            errorMessages.add("Invalid Phone Number");
+        }
         if(driver.getCar_number() == null || driver.getCar_number().isEmpty()) {
             errorMessages.add("Car number is empty");
         }
@@ -36,6 +42,26 @@ public class DriverOneService {
         return errorMessages;
     }
 
+    public List<String> uniquenessOfDriver(Driver driver) {
+        List<String> errorMessages = new ArrayList<>();
+        Driver anyDriver = driverRepository.findByEmail(driver.getEmail()).orElse(null);
+        if(anyDriver != null) {
+            errorMessages.add("This email exists already");
+        }
+        anyDriver = driverRepository.findByPhoneNumber(driver.getPhone_number()).orElse(null);
+        if(anyDriver != null) {
+            errorMessages.add("This phone number exists already");
+        }
+        anyDriver = driverRepository.findByLicenseNumber(driver.getLicense_number()).orElse(null);
+        if(anyDriver != null) {
+            errorMessages.add("This License Number exists already");
+        }
+        anyDriver = driverRepository.findByCarNumber(driver.getCar_number()).orElse(null);
+        if(anyDriver != null) {
+            errorMessages.add("This Car Number exists already");
+        }
+        return errorMessages;
+    }
     public Driver save(Driver driver) {
         return driverRepository.save(driver);
     }

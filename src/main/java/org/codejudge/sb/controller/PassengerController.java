@@ -30,6 +30,8 @@ public class PassengerController {
     @PostMapping(value = AVAILABLE_CABS, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> availableCabs(@RequestBody LocationRequest locationRequest) {
         try {
+            LOG.info(" ### Start of the PassengerController availableCabs() ####");
+            LOG.info("Input --> "+locationRequest.toString());
             List<String> errorMessages = locationService.validate(locationRequest);
             if ( ! errorMessages.isEmpty()) {
                 ResponseModel response = new ResponseModel();
@@ -48,6 +50,7 @@ public class PassengerController {
             List<MinimizedDriver> nearByDriverList = driverOneService.getNearByDrivers(matchingLocations);
             AvailableCabs cabs = new AvailableCabs();
             cabs.setAvailable_cabs(nearByDriverList);
+            LOG.info(" ### End of the PassengerController availableCabs() ####");
             return new ResponseEntity<AvailableCabs>(cabs, HttpStatus.OK);
         }catch (Exception ex) {
             LOG.error("Exception while saving the location");

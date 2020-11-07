@@ -33,35 +33,45 @@ public class DriverController {
         try {
             List<String> errorMessages = driverOneService.validate(driver);
             if ( ! errorMessages.isEmpty()) {
-                ResponseModel response = new ResponseModel();
-                response.setStatus("failure");
-                StringBuilder reasons = new StringBuilder();
-                errorMessages.forEach(value -> reasons.append(value+" ; "));
-                response.setReason(reasons.toString());
-                return new ResponseEntity<ResponseModel>(response, HttpStatus.BAD_REQUEST);
-            } else {
-                driver = driverOneService.save(driver);
-                return new ResponseEntity<Driver>(driver, HttpStatus.CREATED);
+                return getBadRequestResponseEntity(errorMessages);
             }
+            errorMessages = driverOneService.uniquenessOfDriver(driver);
+            if ( ! errorMessages.isEmpty()) {
+                return getBadRequestResponseEntity(errorMessages);
+            }
+                Driver savedDriver = driverOneService.save(driver);
+                return new ResponseEntity<Driver>(savedDriver, HttpStatus.CREATED);
+
         }catch (Exception ex) {
             LOG.error("Exception while registering the driver");
             return new ResponseEntity<String>("Error while registering driver", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    private ResponseEntity<?> getBadRequestResponseEntity(List<String> errorMessages) {
+        ResponseModel response = new ResponseModel();
+        response.setStatus("failure");
+        StringBuilder reasons = new StringBuilder();
+        errorMessages.forEach(value -> reasons.append(value + " ; "));
+        response.setReason(reasons.toString());
+        return new ResponseEntity<ResponseModel>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @PostMapping(value = SHARE_LOCATION, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> shareLocation(@RequestBody LocationRequest locationRequest, @PathVariable("id") Integer id) {
         try {
+            LOG.info(" ### Start of the DriverController shareLocation() ####");
             List<String> errorMessages = locationService.validate(locationRequest);
             if ( ! errorMessages.isEmpty()) {
-                ResponseModel response = new ResponseModel();
-                response.setStatus("failure");
-                StringBuilder reasons = new StringBuilder();
-                errorMessages.forEach(value -> reasons.append(value+" ; "));
-                response.setReason(reasons.toString());
-                return new ResponseEntity<ResponseModel>(response, HttpStatus.BAD_REQUEST);
+                return getBadRequestResponseEntity(errorMessages);
             }
             Driver driver = driverOneService.findById(id);
+            if(driver == null) {
+                errorMessages.clear();
+                errorMessages.add("Invalid Driver Id");
+                return getBadRequestResponseEntity(errorMessages);
+            }
+            LOG.info("Input --> "+locationRequest.toString());
             Location location = new Location();
             location.setDriver(driver);
             location.setLatitude(locationRequest.getLatitude());
@@ -69,6 +79,7 @@ public class DriverController {
             location = locationService.save(location);
             ResponseModel response = new ResponseModel();
             response.setStatus("success");
+            LOG.info(" ### End of the DriverController shareLocation() ####");
             return new ResponseEntity<ResponseModel>(response, HttpStatus.ACCEPTED);
         }catch (Exception ex) {
             LOG.error("Exception while saving the location");

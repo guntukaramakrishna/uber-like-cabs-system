@@ -3,12 +3,14 @@ package org.codejudge.sb.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "driver_location")
 @Getter @Setter @NoArgsConstructor
+@ToString
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
