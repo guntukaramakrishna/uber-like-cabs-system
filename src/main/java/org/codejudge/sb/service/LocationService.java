@@ -3,7 +3,6 @@ package org.codejudge.sb.service;
 import org.codejudge.sb.component.Haversine;
 import org.codejudge.sb.entity.Location;
 import org.codejudge.sb.model.LocationRequest;
-import org.codejudge.sb.repository.DriverRepository;
 import org.codejudge.sb.repository.LocationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @Service
 public class LocationService {
     @Autowired private LocationRepository locationRepository;
-    @Autowired private DriverRepository driverRepository;
     @Autowired private Haversine haversine;
 
     private static final Logger LOG = LoggerFactory.getLogger(LocationService.class);
@@ -47,11 +45,11 @@ public class LocationService {
 
         BiPredicate<Location, LocationRequest> distanceFiler = (x, y) -> {
             double distance = haversine.haversineDistance(x.getLatitude(),x.getLongitude(), y.getLatitude(), y.getLongitude());
-            LOG.info("Distance between two locations - "+x.toString()+ " &&fcv "+y.toString()+" is == "+distance);
+            LOG.info("Distance between two locations - {} && {} is == {}",x,y,distance);
             return distance <= 4.0;
         };
 
-        if(dbLocations != null && dbLocations.size() != 0) {
+        if(dbLocations != null && !dbLocations.isEmpty()) {
             matchingLocations = dbLocations.stream().filter(eachLocation -> distanceFiler.test(eachLocation, locationRequest)).collect(Collectors.toList());
         }
         return matchingLocations;

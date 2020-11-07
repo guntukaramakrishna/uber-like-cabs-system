@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DriverOneService {
@@ -20,6 +21,7 @@ public class DriverOneService {
         List<String> errorMessages = new ArrayList<>();
         if(driver == null) {
             errorMessages.add("Bad Driver Input");
+            return errorMessages;
         }
         if(driver.getName() == null || driver.getName().isEmpty()) {
             errorMessages.add("Name is Empty");
@@ -71,15 +73,10 @@ public class DriverOneService {
     }
 
     public List<MinimizedDriver> getNearByDrivers(List<Location> locations) {
-        List<MinimizedDriver> drivers = new ArrayList<>();
-        for(Location location: locations) {
+        List<MinimizedDriver> drivers = locations.stream().map(location-> {
             Driver driver = location.getDriver();
-            MinimizedDriver minimizedDriver = new MinimizedDriver();
-            minimizedDriver.setEmail(driver.getEmail());
-            minimizedDriver.setPhone_number(driver.getPhone_number());
-            minimizedDriver.setName(driver.getName());
-            drivers.add(minimizedDriver);
-        }
+            return new MinimizedDriver(driver.getName(),driver.getEmail(),driver.getPhone_number());
+        }).collect(Collectors.toList());
         return drivers;
     }
 }

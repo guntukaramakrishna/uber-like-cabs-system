@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/passenger")
@@ -31,18 +32,19 @@ public class PassengerController {
     public ResponseEntity<?> availableCabs(@RequestBody LocationRequest locationRequest) {
         try {
             LOG.info(" ### Start of the PassengerController availableCabs() ####");
-            LOG.info("Input --> "+locationRequest.toString());
+            LOG.info("Input --> {}",locationRequest.toString());
             List<String> errorMessages = locationService.validate(locationRequest);
             if ( ! errorMessages.isEmpty()) {
                 ResponseModel response = new ResponseModel();
                 response.setStatus("failure");
-                StringBuilder reasons = new StringBuilder();
-                errorMessages.forEach(value -> reasons.append(value+" ; "));
-                response.setReason(reasons.toString());
+                String reasons = errorMessages.stream()
+                        .collect(Collectors.joining(";"));
+                response.setReason(reasons);
                 return new ResponseEntity<ResponseModel>(response, HttpStatus.BAD_REQUEST);
             }
             List<Location> matchingLocations = locationService.getMatchingLocations(locationRequest);
-            if(matchingLocations.size() == 0) {
+            if(matchingLocations.isEmpty()) {
+                LOG.info("No cabs available for this request -"+locationRequest.toString());
                 NoCabsResponse noCabsResponse = new NoCabsResponse();
                 noCabsResponse.setMessage("No cabs available!");
                 return new ResponseEntity<NoCabsResponse>(noCabsResponse, HttpStatus.OK);
@@ -50,6 +52,8 @@ public class PassengerController {
             List<MinimizedDriver> nearByDriverList = driverOneService.getNearByDrivers(matchingLocations);
             AvailableCabs cabs = new AvailableCabs();
             cabs.setAvailable_cabs(nearByDriverList);
+            LOG.info("available cabs for this request - {}",locationRequest);
+            LOG.info(cabs.toString());
             LOG.info(" ### End of the PassengerController availableCabs() ####");
             return new ResponseEntity<AvailableCabs>(cabs, HttpStatus.OK);
         }catch (Exception ex) {

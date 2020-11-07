@@ -16,14 +16,11 @@ public class SwaggerConfig {
     @Bean
     public Docket apiDocket() {
 
-        Docket docket =  new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .paths(PathSelectors.any())
                 .build();
-
-        return docket;
-
     }
 
 }

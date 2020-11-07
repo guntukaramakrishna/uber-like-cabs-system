@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/driver")
@@ -32,7 +33,7 @@ public class DriverController {
     public ResponseEntity<?> register(@RequestBody Driver driver) {
         try {
             LOG.info(" ### Start of the DriverController register() ####");
-            LOG.info("Input --> "+driver.toString());
+            LOG.info("Input --> {} ",driver);
             List<String> errorMessages = driverOneService.validate(driver);
             if ( ! errorMessages.isEmpty()) {
                 return getBadRequestResponseEntity(errorMessages);
@@ -54,9 +55,9 @@ public class DriverController {
     private ResponseEntity<?> getBadRequestResponseEntity(List<String> errorMessages) {
         ResponseModel response = new ResponseModel();
         response.setStatus("failure");
-        StringBuilder reasons = new StringBuilder();
-        errorMessages.forEach(value -> reasons.append(value + " ; "));
-        response.setReason(reasons.toString());
+        String reasons = errorMessages.stream()
+                .collect(Collectors.joining(";"));
+        response.setReason(reasons);
         return new ResponseEntity<ResponseModel>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -74,12 +75,12 @@ public class DriverController {
                 errorMessages.add("Invalid Driver Id");
                 return getBadRequestResponseEntity(errorMessages);
             }
-            LOG.info("Input --> "+locationRequest.toString());
+            LOG.info("Input --> {}",locationRequest);
             Location location = new Location();
             location.setDriver(driver);
             location.setLatitude(locationRequest.getLatitude());
             location.setLongitude(locationRequest.getLongitude());
-            location = locationService.save(location);
+            locationService.save(location);
             ResponseModel response = new ResponseModel();
             response.setStatus("success");
             LOG.info(" ### End of the DriverController shareLocation() ####");
