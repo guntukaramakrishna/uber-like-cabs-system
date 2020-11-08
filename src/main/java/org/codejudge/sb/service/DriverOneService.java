@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,11 +73,10 @@ public class DriverOneService {
         return driverRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    public List<MinimizedDriver> getNearByDrivers(List<Location> locations) {
-        List<MinimizedDriver> drivers = locations.stream().map(location-> {
+    public List<MinimizedDriver> getNearByDrivers(Collection<Location> locations) {
+        return locations.stream().map(location-> {
             Driver driver = location.getDriver();
             return new MinimizedDriver(driver.getName(),driver.getEmail(),driver.getPhone_number());
         }).collect(Collectors.toList());
-        return drivers;
     }
 }

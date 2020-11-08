@@ -32,7 +32,7 @@ public class PassengerController {
     public ResponseEntity<?> availableCabs(@RequestBody LocationRequest locationRequest) {
         try {
             LOG.info(" ### Start of the PassengerController availableCabs() ####");
-            LOG.info("Input --> {}",locationRequest.toString());
+            LOG.info("Input --> {}",locationRequest);
             List<String> errorMessages = locationService.validate(locationRequest);
             if ( ! errorMessages.isEmpty()) {
                 ResponseModel response = new ResponseModel();
@@ -44,7 +44,7 @@ public class PassengerController {
             }
             List<Location> matchingLocations = locationService.getMatchingLocations(locationRequest);
             if(matchingLocations.isEmpty()) {
-                LOG.info("No cabs available for this request -"+locationRequest.toString());
+                LOG.info("No cabs available for this request - {}",locationRequest);
                 NoCabsResponse noCabsResponse = new NoCabsResponse();
                 noCabsResponse.setMessage("No cabs available!");
                 return new ResponseEntity<NoCabsResponse>(noCabsResponse, HttpStatus.OK);

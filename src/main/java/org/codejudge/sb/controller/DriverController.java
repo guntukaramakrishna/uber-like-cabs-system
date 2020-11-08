@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class DriverController {
         }
     }
 
-    private ResponseEntity<?> getBadRequestResponseEntity(List<String> errorMessages) {
+    private ResponseEntity<?> getBadRequestResponseEntity(Collection<String> errorMessages) {
         ResponseModel response = new ResponseModel();
         response.setStatus("failure");
         String reasons = errorMessages.stream()
